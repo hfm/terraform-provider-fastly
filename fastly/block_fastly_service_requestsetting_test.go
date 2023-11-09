@@ -85,12 +85,9 @@ func TestAccFastlyServiceVCLRequestSetting_basic(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckServiceExists("fastly_service_vcl.foo", &service),
 					testAccCheckFastlyServiceVCLRequestSettingsAttributes(&service, []*gofastly.RequestSetting{&rq1}),
-					resource.TestCheckResourceAttr(
-						"fastly_service_vcl.foo", "name", name),
-					resource.TestCheckResourceAttr(
-						"fastly_service_vcl.foo", "request_setting.#", "1"),
-					resource.TestCheckResourceAttr(
-						"fastly_service_vcl.foo", "condition.#", "1"),
+					resource.TestCheckResourceAttr("fastly_service_vcl.foo", "name", name),
+					resource.TestCheckResourceAttr("fastly_service_vcl.foo", "request_setting.#", "1"),
+					resource.TestCheckResourceAttr("fastly_service_vcl.foo", "condition.#", "1"),
 				),
 			},
 			{
@@ -98,12 +95,9 @@ func TestAccFastlyServiceVCLRequestSetting_basic(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckServiceExists("fastly_service_vcl.foo", &service),
 					testAccCheckFastlyServiceVCLRequestSettingsAttributes(&service, []*gofastly.RequestSetting{&rq2}),
-					resource.TestCheckResourceAttr(
-						"fastly_service_vcl.foo", "name", name),
-					resource.TestCheckResourceAttr(
-						"fastly_service_vcl.foo", "request_setting.#", "1"),
-					resource.TestCheckResourceAttr(
-						"fastly_service_vcl.foo", "condition.#", "1"),
+					resource.TestCheckResourceAttr("fastly_service_vcl.foo", "name", name),
+					resource.TestCheckResourceAttr("fastly_service_vcl.foo", "request_setting.#", "1"),
+					resource.TestCheckResourceAttr("fastly_service_vcl.foo", "condition.#", "1"),
 				),
 			},
 		},
