@@ -1,28 +1,23 @@
 package fastly
 
-// String is a helper that returns a pointer to the string value passed in.
-func String(v string) *string {
+// MultiConstraint is a generic constraint for ToPointer/ToValue.
+type MultiConstraint interface {
+	~string | ~int | int32 | ~int64 | uint | uint8 | uint32 | uint64 | float64 | ~bool
+}
+
+// ToPointer converts T to *T.
+func ToPointer[T MultiConstraint](v T) *T {
 	return &v
 }
 
-// Int is a helper that returns a pointer to the int value passed in.
-func Int(v int) *int {
-	return &v
-}
-
-// Uint is a helper that returns a pointer to the uint value passed in.
-func Uint(v uint) *uint {
-	return &v
-}
-
-// Uint8 is a helper that returns a pointer to the uint8 value passed in.
-func Uint8(v uint8) *uint8 {
-	return &v
-}
-
-// Bool is a helper that returns a pointer to the bool value passed in.
-func Bool(v bool) *bool {
-	return &v
+// ToValue converts *T to T.
+// If v is nil, then return T's zero value.
+func ToValue[T MultiConstraint](v *T) T {
+	if v != nil {
+		return *v
+	}
+	var zero T
+	return zero
 }
 
 // NullString is a helper that returns a pointer to the string value passed in

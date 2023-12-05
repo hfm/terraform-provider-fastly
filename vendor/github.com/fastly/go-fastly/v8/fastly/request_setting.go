@@ -3,11 +3,13 @@ package fastly
 import (
 	"fmt"
 	"net/url"
-	"sort"
 	"time"
 )
 
 const (
+	// RequestSettingActionUnset unsets the action.
+	RequestSettingActionUnset RequestSettingAction = ""
+
 	// RequestSettingActionLookup sets request handling to lookup via the cache.
 	RequestSettingActionLookup RequestSettingAction = "lookup"
 
@@ -17,12 +19,6 @@ const (
 
 // RequestSettingAction is a type of request setting action.
 type RequestSettingAction string
-
-// RequestSettingActionPtr returns a pointer to a RequestSettingAction.
-func RequestSettingActionPtr(v RequestSettingAction) *RequestSettingAction {
-	rsa := &v
-	return rsa
-}
 
 const (
 	// RequestSettingXFFClear clears any X-Forwarded-For headers.
@@ -45,49 +41,25 @@ const (
 // RequestSettingXFF is a type of X-Forwarded-For value to set.
 type RequestSettingXFF string
 
-// RequestSettingXFFPtr returns a pointer to a RequestSettingXFF.
-func RequestSettingXFFPtr(v RequestSettingXFF) *RequestSettingXFF {
-	rsx := &v
-	return rsx
-}
-
 // RequestSetting represents a request setting response from the Fastly API.
 type RequestSetting struct {
-	Action           RequestSettingAction `mapstructure:"action"`
-	BypassBusyWait   bool                 `mapstructure:"bypass_busy_wait"`
-	CreatedAt        *time.Time           `mapstructure:"created_at"`
-	DefaultHost      string               `mapstructure:"default_host"`
-	DeletedAt        *time.Time           `mapstructure:"deleted_at"`
-	ForceMiss        bool                 `mapstructure:"force_miss"`
-	ForceSSL         bool                 `mapstructure:"force_ssl"`
-	GeoHeaders       bool                 `mapstructure:"geo_headers"`
-	HashKeys         string               `mapstructure:"hash_keys"`
-	MaxStaleAge      int                  `mapstructure:"max_stale_age"`
-	Name             string               `mapstructure:"name"`
-	RequestCondition string               `mapstructure:"request_condition"`
-	ServiceID        string               `mapstructure:"service_id"`
-	ServiceVersion   int                  `mapstructure:"version"`
-	TimerSupport     bool                 `mapstructure:"timer_support"`
-	UpdatedAt        *time.Time           `mapstructure:"updated_at"`
-	XForwardedFor    RequestSettingXFF    `mapstructure:"xff"`
-}
-
-// requestSettingsByName is a sortable list of request settings.
-type requestSettingsByName []*RequestSetting
-
-// Len implement the sortable interface.
-func (s requestSettingsByName) Len() int {
-	return len(s)
-}
-
-// Swap implement the sortable interface.
-func (s requestSettingsByName) Swap(i, j int) {
-	s[i], s[j] = s[j], s[i]
-}
-
-// Less implement the sortable interface.
-func (s requestSettingsByName) Less(i, j int) bool {
-	return s[i].Name < s[j].Name
+	Action           *RequestSettingAction `mapstructure:"action"`
+	BypassBusyWait   *bool                 `mapstructure:"bypass_busy_wait"`
+	CreatedAt        *time.Time            `mapstructure:"created_at"`
+	DefaultHost      *string               `mapstructure:"default_host"`
+	DeletedAt        *time.Time            `mapstructure:"deleted_at"`
+	ForceMiss        *bool                 `mapstructure:"force_miss"`
+	ForceSSL         *bool                 `mapstructure:"force_ssl"`
+	GeoHeaders       *bool                 `mapstructure:"geo_headers"`
+	HashKeys         *string               `mapstructure:"hash_keys"`
+	MaxStaleAge      *int                  `mapstructure:"max_stale_age"`
+	Name             *string               `mapstructure:"name"`
+	RequestCondition *string               `mapstructure:"request_condition"`
+	ServiceID        *string               `mapstructure:"service_id"`
+	ServiceVersion   *int                  `mapstructure:"version"`
+	TimerSupport     *bool                 `mapstructure:"timer_support"`
+	UpdatedAt        *time.Time            `mapstructure:"updated_at"`
+	XForwardedFor    *RequestSettingXFF    `mapstructure:"xff"`
 }
 
 // ListRequestSettingsInput is used as input to the ListRequestSettings
@@ -119,7 +91,6 @@ func (c *Client) ListRequestSettings(i *ListRequestSettingsInput) ([]*RequestSet
 	if err := decodeBodyMap(resp.Body, &bs); err != nil {
 		return nil, err
 	}
-	sort.Stable(requestSettingsByName(bs))
 	return bs, nil
 }
 
@@ -219,7 +190,7 @@ func (c *Client) GetRequestSetting(i *GetRequestSettingInput) (*RequestSetting, 
 // function.
 type UpdateRequestSettingInput struct {
 	// Action allows you to terminate request handling and immediately perform an action.
-	Action RequestSettingAction `url:"action,omitempty"`
+	Action *RequestSettingAction `url:"action,omitempty"`
 	// BypassBusyWait disables collapsed forwarding, so you don't wait for other objects to origin.
 	BypassBusyWait *Compatibool `url:"bypass_busy_wait,omitempty"`
 	// DefaultHost sets the host header.
@@ -247,7 +218,7 @@ type UpdateRequestSettingInput struct {
 	// TimerSupport injects the X-Timer info into the request for viewing origin fetch durations.
 	TimerSupport *Compatibool `url:"timer_support,omitempty"`
 	// XForwardedFor determines header value (clear, leave, append, append_all, overwrite)
-	XForwardedFor RequestSettingXFF `url:"xff,omitempty"`
+	XForwardedFor *RequestSettingXFF `url:"xff,omitempty"`
 }
 
 // UpdateRequestSetting updates the specified resource.

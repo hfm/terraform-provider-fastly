@@ -35,7 +35,7 @@ type SecretStore struct {
 // CreateSecretStoreInput is used as input to the CreateSecretStore function.
 type CreateSecretStoreInput struct {
 	// Name of the Secret Store (required).
-	Name string
+	Name string `json:"name"`
 }
 
 // CreateSecretStore creates a new resource.
@@ -45,24 +45,7 @@ func (c *Client) CreateSecretStore(i *CreateSecretStoreInput) (*SecretStore, err
 	}
 
 	p := "/resources/stores/secret"
-
-	// TODO: Should use PostJSON to avoid manually encoding.
-	var body bytes.Buffer
-	err := json.NewEncoder(&body).Encode(struct {
-		Name string `json:"name"`
-	}{
-		Name: i.Name,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := c.Post(p, &RequestOptions{
-		Headers: map[string]string{
-			"Content-Type": "application/json",
-			"Accept":       "application/json",
-		},
-		Body:     &body,
+	resp, err := c.PostJSON(p, i, &RequestOptions{
 		Parallel: true,
 	})
 	if err != nil {
@@ -92,6 +75,8 @@ type ListSecretStoresInput struct {
 	Cursor string
 	// Limit is the desired number of Secret Stores (optional).
 	Limit int
+	// Name is the name of the secret store (optional).
+	Name string
 }
 
 // ListSecretStores retrieves all resources.
@@ -107,6 +92,9 @@ func (c *Client) ListSecretStores(i *ListSecretStoresInput) (*SecretStores, erro
 	}
 	if i.Cursor != "" {
 		params["cursor"] = i.Cursor
+	}
+	if i.Name != "" {
+		params["name"] = i.Name
 	}
 
 	resp, err := c.Get(p, &RequestOptions{
